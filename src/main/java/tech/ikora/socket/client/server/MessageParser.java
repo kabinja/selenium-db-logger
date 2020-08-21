@@ -5,7 +5,6 @@ import tech.ikora.socket.client.model.Dom;
 import tech.ikora.socket.client.model.StackTrace;
 
 import java.io.*;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,37 +18,27 @@ public class MessageParser {
     private static final Pattern byPattern = Pattern.compile("^\\[By\\.(.*):\\s(.*)]$");
     private static final Pattern stringPattern = Pattern.compile("^\\[(.*),\\s(.*)]$");
 
-    public Action read(Socket socket){
+    public static Action readAction(DataInputStream in) throws IOException {
         final Action action = new Action();
 
-        try(DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()))){
-            final String url = readBlock(URL_CODE, in);
-            final String arguments = readBlock(ARGUMENT_CODE, in);
-            final String dom = readBlock(DOM_CODE, in);
-            final String stackTrace = readBlock(STACK_CODE, in);
+        final String url = readBlock(URL_CODE, in);
+        final String arguments = readBlock(ARGUMENT_CODE, in);
+        final String dom = readBlock(DOM_CODE, in);
+        final String stackTrace = readBlock(STACK_CODE, in);
 
-            final FindBy findBy = extractLocatorStrategy(arguments);
+        final FindBy findBy = extractLocatorStrategy(arguments);
 
-            action.setUrl(url);
-            action.setLocator(findBy.getLocator());
-            action.setStrategy(findBy.getStrategy());
-            action.setDom(new Dom(dom));
-            action.setStackTrace(new StackTrace(stackTrace));
-        }catch(IOException e) {
-            e.printStackTrace();
-        }
+        action.setUrl(url);
+        action.setLocator(findBy.getLocator());
+        action.setStrategy(findBy.getStrategy());
+        action.setDom(new Dom(dom));
+        action.setStackTrace(new StackTrace(stackTrace));
 
         return action;
     }
 
-    private String readBlock(final char code, final DataInputStream in) throws IOException {
-        char dataType = in.readChar();
+    public static String readBlock(final DataInputStream in) throws IOException {
         int length = in.readInt();
-
-        if(code != dataType){
-            throw new IOException("Cannot interpret type: " + dataType);
-        }
-
         byte[] messageByte = new byte[length];
         boolean end = false;
 
@@ -74,7 +63,17 @@ public class MessageParser {
         return dataString.toString();
     }
 
-    private FindBy extractLocatorStrategy(String arguments){
+    private static String readBlock(final char code, final DataInputStream in) throws IOException {
+        char dataType = in.readChar();
+
+        if(code != dataType){
+            throw new IOException("Cannot interpret type: " + dataType);
+        }
+
+        return readBlock(in);
+    }
+
+    private static FindBy extractLocatorStrategy(String arguments){
         String strategy = "";
         String locator = "";
 
