@@ -14,6 +14,7 @@ public class MessageParser {
     private static final char STACK_CODE = 's';
     private static final char DOM_CODE = 'd';
     private static final char ARGUMENT_CODE = 'a';
+    private static final char FAILURE_CODE = 'f';
 
     private static final Pattern byPattern = Pattern.compile("^\\[By\\.(.*):\\s(.*)]$");
     private static final Pattern stringPattern = Pattern.compile("^\\[(.*),\\s(.*)]$");
@@ -25,6 +26,7 @@ public class MessageParser {
         final String arguments = readBlock(ARGUMENT_CODE, in);
         final String dom = readBlock(DOM_CODE, in);
         final String stackTrace = readBlock(STACK_CODE, in);
+        final String failure = readBlock(FAILURE_CODE, in);
 
         final FindBy findBy = extractLocatorStrategy(arguments);
 
@@ -33,6 +35,7 @@ public class MessageParser {
         action.setStrategy(findBy.getStrategy());
         action.setDom(new Dom(dom));
         action.setStackTrace(new StackTrace(stackTrace));
+        action.setFailure(failure);
 
         return action;
     }

@@ -45,13 +45,14 @@ public class Database {
             final String createActionTable =
                     "create table if not exists actions("
                     + "id integer primary key,"
-                    + "project string not null,"
-                    + "commit_id string not null,"
-                    + "stacktrace_id string not null,"
-                    + "locator string not null,"
-                    + "strategy string not null,"
-                    + "url string not null,"
-                    + "dom_id sting not null"
+                    + "project text not null,"
+                    + "commit_id text not null,"
+                    + "stacktrace_id text not null,"
+                    + "locator text not null,"
+                    + "strategy text not null,"
+                    + "url text not null,"
+                    + "dom_id text not null,"
+                    + "failure text not null"
                     + ");";
 
             statement.execute(createActionTable);
@@ -75,7 +76,7 @@ public class Database {
             insertStackTrace.setString(2, action.getStackTrace().getContent());
             insertStackTrace.executeUpdate();
 
-            final String actionSQL = "insert into actions(project,commit_id,stacktrace_id,locator,strategy,url,dom_id) values(?,?,?,?,?,?,?)";
+            final String actionSQL = "insert into actions(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, failure) values(?,?,?,?,?,?,?,?)";
             final PreparedStatement insertAction = connection.prepareStatement(actionSQL);
             insertAction.setString(1, action.getProject());
             insertAction.setString(2, action.getCommitId());
@@ -84,6 +85,7 @@ public class Database {
             insertAction.setString(5, action.getStrategy());
             insertAction.setString(6, action.getUrl());
             insertAction.setInt(7, action.getDom().getId());
+            insertAction.setString(8, action.getFailure());
             insertAction.executeUpdate();
 
         } catch (SQLException e) {

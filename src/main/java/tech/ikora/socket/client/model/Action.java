@@ -8,6 +8,7 @@ public class Action {
     private String url;
     private StackTrace stackTrace;
     private Dom dom;
+    private String failure;
 
     public String getProject() {
         return project;
@@ -63,5 +64,13 @@ public class Action {
 
     public void setDom(Dom dom) {
         this.dom = dom;
+    }
+
+    public String getFailure() {
+        return failure;
+    }
+
+    public void setFailure(String failure) {
+        this.failure = failure;
     }
 }

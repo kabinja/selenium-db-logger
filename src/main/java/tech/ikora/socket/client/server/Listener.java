@@ -30,10 +30,10 @@ public class Listener {
     private static boolean processMessage(Socket socket){
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()))){
             switch (in.readChar()){
-                case READ_PROJECT_CODE: setProject(in); break;
-                case READ_COMMIT_CODE: setCommit(in); break;
-                case READ_FRAME_CODE: setAction(in); break;
-                case STOP_CODE: return false;
+                case READ_PROJECT_CODE: System.out.println("Receive project name"); setProject(in); break;
+                case READ_COMMIT_CODE: System.out.println("Receive commit id"); setCommit(in); break;
+                case READ_FRAME_CODE:  System.out.println("Receive action frame"); setAction(in); break;
+                case STOP_CODE: System.out.println("Receive shutdown signal"); return false;
                 default: throw new IllegalStateException("Unexpected code: " + in.readChar());
             }
         }
