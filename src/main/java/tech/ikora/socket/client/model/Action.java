@@ -8,6 +8,8 @@ public class Action {
     private String url;
     private StackTrace stackTrace;
     private Dom dom;
+    private int windowWidth;
+    private int windowHeight;
     private String failure;
 
     public String getProject() {
@@ -64,6 +66,22 @@ public class Action {
 
     public void setDom(Dom dom) {
         this.dom = dom;
+    }
+
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+
+    public void setWindowWidth(int windowWidth) {
+        this.windowWidth = windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
+    public void setWindowHeight(int windowHeight) {
+        this.windowHeight = windowHeight;
     }
 
     public String getFailure() {

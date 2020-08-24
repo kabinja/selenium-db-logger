@@ -52,6 +52,8 @@ public class Database {
                     + "strategy text not null,"
                     + "url text not null,"
                     + "dom_id text not null,"
+                    + "window_width integer not null,"
+                    + "window_height integer not null,"
                     + "failure text not null"
                     + ");";
 
@@ -76,7 +78,7 @@ public class Database {
             insertStackTrace.setString(2, action.getStackTrace().getContent());
             insertStackTrace.executeUpdate();
 
-            final String actionSQL = "insert into actions(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, failure) values(?,?,?,?,?,?,?,?)";
+            final String actionSQL = "insert into actions(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?,?)";
             final PreparedStatement insertAction = connection.prepareStatement(actionSQL);
             insertAction.setString(1, action.getProject());
             insertAction.setString(2, action.getCommitId());
@@ -85,7 +87,9 @@ public class Database {
             insertAction.setString(5, action.getStrategy());
             insertAction.setString(6, action.getUrl());
             insertAction.setInt(7, action.getDom().getId());
-            insertAction.setString(8, action.getFailure());
+            insertAction.setInt(8, action.getWindowWidth());
+            insertAction.setInt(9, action.getWindowHeight());
+            insertAction.setString(10, action.getFailure());
             insertAction.executeUpdate();
 
         } catch (SQLException e) {
