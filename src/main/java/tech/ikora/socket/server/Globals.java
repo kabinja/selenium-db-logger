@@ -1,4 +1,4 @@
-package tech.ikora.socket.client;
+package tech.ikora.socket.server;
 
 public class Globals {
     private static String project = "NONE";

@@ -1,8 +1,8 @@
-package tech.ikora.socket.client.server;
+package tech.ikora.socket.server.server;
 
-import tech.ikora.socket.client.Globals;
-import tech.ikora.socket.client.database.Database;
-import tech.ikora.socket.client.model.Action;
+import tech.ikora.socket.server.Globals;
+import tech.ikora.socket.server.database.Database;
+import tech.ikora.socket.server.model.Action;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

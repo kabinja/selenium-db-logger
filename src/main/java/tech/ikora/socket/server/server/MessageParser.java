@@ -1,8 +1,8 @@
-package tech.ikora.socket.client.server;
+package tech.ikora.socket.server.server;
 
-import tech.ikora.socket.client.model.Action;
-import tech.ikora.socket.client.model.Dom;
-import tech.ikora.socket.client.model.StackTrace;
+import tech.ikora.socket.server.model.Action;
+import tech.ikora.socket.server.model.Dom;
+import tech.ikora.socket.server.model.StackTrace;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

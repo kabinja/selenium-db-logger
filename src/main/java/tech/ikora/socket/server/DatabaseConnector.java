@@ -1,10 +1,10 @@
-package tech.ikora.socket.client;
+package tech.ikora.socket.server;
 
 import org.apache.commons.cli.*;
-import tech.ikora.socket.client.database.Database;
-import tech.ikora.socket.client.server.Listener;
+import tech.ikora.socket.server.database.Database;
+import tech.ikora.socket.server.server.Listener;
 
-public class SocketClient {
+public class DatabaseConnector {
     public static void main(String[] args){
         try {
             final Options options = new Options();

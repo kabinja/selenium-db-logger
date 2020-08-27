@@ -1,6 +1,6 @@
-package tech.ikora.socket.client.database;
+package tech.ikora.socket.server.database;
 
-import tech.ikora.socket.client.model.Action;
+import tech.ikora.socket.server.model.Action;
 
 import java.sql.*;
 

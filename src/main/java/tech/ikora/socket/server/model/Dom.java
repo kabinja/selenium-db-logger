@@ -1,4 +1,4 @@
-package tech.ikora.socket.client.model;
+package tech.ikora.socket.server.model;
 
 public class Dom {
     private final int id;
