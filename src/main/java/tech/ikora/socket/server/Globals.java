@@ -1,22 +1,15 @@
 package tech.ikora.socket.server;
 
+import tech.ikora.socket.server.model.Version;
+
 public class Globals {
-    private static String project = "NONE";
-    private static String commitId = "NONE";
+    private static Version version;
 
-    public static String getProject() {
-        return project;
+    public static void setVersion(Version version) {
+        Globals.version = version;
     }
 
-    public static void setProject(String project) {
-        Globals.project = project;
-    }
-
-    public static String getCommitId() {
-        return commitId;
-    }
-
-    public static void setCommitId(String commitId) {
-        Globals.commitId = commitId;
+    public static Version getVersion() {
+        return Globals.version;
     }
 }

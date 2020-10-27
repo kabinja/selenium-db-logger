@@ -1,8 +1,10 @@
 package tech.ikora.socket.server.server;
 
+import tech.ikora.socket.server.Globals;
 import tech.ikora.socket.server.model.Action;
 import tech.ikora.socket.server.model.Dom;
 import tech.ikora.socket.server.model.StackTrace;
+import tech.ikora.socket.server.model.Version;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,8 +20,22 @@ public class MessageParser {
     private static final char WINDOW_HEIGHT_CODE = 'h';
     private static final char FAILURE_CODE = 'f';
 
+    private static final char COMMIT_CODE = 'c';
+    private static final char PROJECT_CODE = 'p';
+    private static final char TIME_CODE = 't';
+
     private static final Pattern byPattern = Pattern.compile("^\\[By\\.(.*):\\s(.*)]$");
     private static final Pattern stringPattern = Pattern.compile("^\\[(.*),\\s(.*)]$");
+
+    public static Version readVersion(DataInputStream in) throws  IOException {
+        final Version version = new Version();
+
+        version.setId(readBlock(COMMIT_CODE, in));
+        version.setProject(readBlock(PROJECT_CODE, in));
+        version.setDate(readBlock(TIME_CODE, in));
+
+        return version;
+    }
 
     public static Action readAction(DataInputStream in) throws IOException {
         final Action action = new Action();

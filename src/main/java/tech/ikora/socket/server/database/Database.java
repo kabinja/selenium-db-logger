@@ -1,6 +1,7 @@
 package tech.ikora.socket.server.database;
 
 import tech.ikora.socket.server.model.Action;
+import tech.ikora.socket.server.model.Version;
 
 import java.sql.*;
 
@@ -26,8 +27,17 @@ public class Database {
         try (Connection connection = DriverManager.getConnection(instance.url)) {
             Statement statement = connection.createStatement();
 
+            final String createVersionTable =
+                    "create table if not exists version("
+                    + "id text primary key,"
+                    + "project text not null,"
+                    + "date text not null"
+                    + ");";
+
+            statement.execute(createVersionTable);
+
             final String createStackTraceTable =
-                    "create table if not exists stack_traces("
+                    "create table if not exists stack_trace("
                     + "id integer primary key,"
                     + "content text not null"
                     + ");";
@@ -35,7 +45,7 @@ public class Database {
             statement.execute(createStackTraceTable);
 
             final String createDomTable =
-                    "create table if not exists doms("
+                    "create table if not exists dom("
                     + "id integer primary key,"
                     + "content text not null"
                     + ");";
@@ -43,9 +53,8 @@ public class Database {
             statement.execute(createDomTable);
 
             final String createActionTable =
-                    "create table if not exists actions("
+                    "create table if not exists action("
                     + "id integer primary key,"
-                    + "project text not null,"
                     + "commit_id text not null,"
                     + "stacktrace_id text not null,"
                     + "locator text not null,"
@@ -64,23 +73,36 @@ public class Database {
         }
     }
 
+    public static void store(Version version){
+        try(Connection connection = DriverManager.getConnection(instance.url)){
+            final String insertVersionSQL = "insert or ignore into version(id, project, date) values (?,?,?)";
+            final PreparedStatement insertVersion = connection.prepareStatement(insertVersionSQL);
+            insertVersion.setString(1, version.getId());
+            insertVersion.setString(2, version.getProject());
+            insertVersion.setString(3, version.getDate());
+            insertVersion.execute();
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void store(Action action){
         try (Connection connection = DriverManager.getConnection(instance.url)) {
-            final String insertDomSQL = "insert or ignore into doms(id,content) values(?,?)";
+            final String insertDomSQL = "insert or ignore into dom(id,content) values(?,?)";
             final PreparedStatement insertDom = connection.prepareStatement(insertDomSQL);
             insertDom.setInt(1, action.getDom().getId());
             insertDom.setString(2, action.getDom().getContent());
             insertDom.executeUpdate();
 
-            final String insertStackTraceSQL = "insert or ignore into stack_traces(id,content) values(?,?)";
+            final String insertStackTraceSQL = "insert or ignore into stack_trace(id,content) values(?,?)";
             final PreparedStatement insertStackTrace = connection.prepareStatement(insertStackTraceSQL);
             insertStackTrace.setInt(1, action.getStackTrace().getId());
             insertStackTrace.setString(2, action.getStackTrace().getContent());
             insertStackTrace.executeUpdate();
 
-            final String actionSQL = "insert into actions(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?,?)";
+            final String actionSQL = "insert into action(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?,?)";
             final PreparedStatement insertAction = connection.prepareStatement(actionSQL);
-            insertAction.setString(1, action.getProject());
             insertAction.setString(2, action.getCommitId());
             insertAction.setInt(3, action.getStackTrace().getId());
             insertAction.setString(4, action.getLocator());

@@ -3,6 +3,7 @@ package tech.ikora.socket.server.server;
 import tech.ikora.socket.server.Globals;
 import tech.ikora.socket.server.database.Database;
 import tech.ikora.socket.server.model.Action;
+import tech.ikora.socket.server.model.Version;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -11,8 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Listener {
-    private final static char READ_PROJECT_CODE = 'p';
-    private final static char READ_COMMIT_CODE = 'c';
+    private final static char READ_VERSION_CODE = 'v';
     private final static char READ_FRAME_CODE = 'f';
     private final static char STOP_CODE = 'e';
 
@@ -29,12 +29,13 @@ public class Listener {
 
     private static boolean processMessage(Socket socket){
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()))){
-            switch (in.readChar()){
-                case READ_PROJECT_CODE: System.out.println("Receive project name"); setProject(in); break;
-                case READ_COMMIT_CODE: System.out.println("Receive commit id"); setCommit(in); break;
-                case READ_FRAME_CODE:  System.out.println("Receive action frame"); setAction(in); break;
-                case STOP_CODE: System.out.println("Receive shutdown signal"); return false;
-                default: throw new IllegalStateException("Unexpected code: " + in.readChar());
+            while (in.available() > 0){
+                switch (in.readChar()){
+                    case READ_VERSION_CODE: System.out.println("Receive version frame"); setCommit(in); break;
+                    case READ_FRAME_CODE:  System.out.println("Receive action frame"); setAction(in); break;
+                    case STOP_CODE: System.out.println("Receive shutdown signal"); return false;
+                    default: throw new IllegalStateException("Unexpected code: " + in.readChar());
+                }
             }
         }
         catch(IOException e) {
@@ -44,21 +45,16 @@ public class Listener {
         return true;
     }
 
-    private static void setProject(DataInputStream in) throws IOException {
-        final String project = MessageParser.readBlock(in);
-        Globals.setProject(project);
-    }
-
     private static void setCommit(DataInputStream in) throws IOException {
-        final String commit = MessageParser.readBlock(in);
-        Globals.setCommitId(commit);
+        final Version version = MessageParser.readVersion(in);
+        Globals.setVersion(version);
+        
+        Database.store(version);
     }
 
     private static void setAction(DataInputStream in) throws IOException {
         final Action action = MessageParser.readAction(in);
-
-        action.setCommitId(Globals.getCommitId());
-        action.setProject(Globals.getProject());
+        action.setCommitId(Globals.getVersion().getId());
 
         Database.store(action);
     }
