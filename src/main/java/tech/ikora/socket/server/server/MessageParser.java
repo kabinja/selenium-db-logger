@@ -23,6 +23,7 @@ public class MessageParser {
     private static final char COMMIT_CODE = 'c';
     private static final char PROJECT_CODE = 'p';
     private static final char TIME_CODE = 't';
+    private static final char DIFFERENCE_CODE = 'd';
 
     private static final Pattern byPattern = Pattern.compile("^\\[By\\.(.*):\\s(.*)]$");
     private static final Pattern stringPattern = Pattern.compile("^\\[(.*),\\s(.*)]$");
@@ -33,6 +34,7 @@ public class MessageParser {
         version.setId(readBlock(COMMIT_CODE, in));
         version.setProject(readBlock(PROJECT_CODE, in));
         version.setDate(readBlock(TIME_CODE, in));
+        version.setDifference(readBlock(DIFFERENCE_CODE, in));
 
         return version;
     }

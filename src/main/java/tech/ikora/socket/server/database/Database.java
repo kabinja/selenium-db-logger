@@ -31,7 +31,8 @@ public class Database {
                     "create table if not exists version("
                     + "id text primary key,"
                     + "project text not null,"
-                    + "date text not null"
+                    + "date text not null,"
+                    + "differnce text not null"
                     + ");";
 
             statement.execute(createVersionTable);
@@ -75,11 +76,12 @@ public class Database {
 
     public static void store(Version version){
         try(Connection connection = DriverManager.getConnection(instance.url)){
-            final String insertVersionSQL = "insert or ignore into version(id, project, date) values (?,?,?)";
+            final String insertVersionSQL = "insert or ignore into version(id, project, date, difference) values (?,?,?,?)";
             final PreparedStatement insertVersion = connection.prepareStatement(insertVersionSQL);
             insertVersion.setString(1, version.getId());
             insertVersion.setString(2, version.getProject());
             insertVersion.setString(3, version.getDate());
+            insertVersion.setString(4, version.getDifference());
             insertVersion.execute();
 
         }catch (SQLException e) {
@@ -101,17 +103,17 @@ public class Database {
             insertStackTrace.setString(2, action.getStackTrace().getContent());
             insertStackTrace.executeUpdate();
 
-            final String actionSQL = "insert into action(project,commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?,?)";
+            final String actionSQL = "insert into action(commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?)";
             final PreparedStatement insertAction = connection.prepareStatement(actionSQL);
-            insertAction.setString(2, action.getCommitId());
-            insertAction.setInt(3, action.getStackTrace().getId());
-            insertAction.setString(4, action.getLocator());
-            insertAction.setString(5, action.getStrategy());
-            insertAction.setString(6, action.getUrl());
-            insertAction.setInt(7, action.getDom().getId());
-            insertAction.setInt(8, action.getWindowWidth());
-            insertAction.setInt(9, action.getWindowHeight());
-            insertAction.setString(10, action.getFailure());
+            insertAction.setString(1, action.getCommitId());
+            insertAction.setInt(2, action.getStackTrace().getId());
+            insertAction.setString(3, action.getLocator());
+            insertAction.setString(4, action.getStrategy());
+            insertAction.setString(5, action.getUrl());
+            insertAction.setInt(6, action.getDom().getId());
+            insertAction.setInt(7, action.getWindowWidth());
+            insertAction.setInt(8, action.getWindowHeight());
+            insertAction.setString(9, action.getFailure());
             insertAction.executeUpdate();
 
         } catch (SQLException e) {

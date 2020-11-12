@@ -4,6 +4,7 @@ public class Version {
     private String id;
     private String project;
     private String date;
+    private String difference;
 
     public void setId(String id) {
         this.id = id;
@@ -17,6 +18,10 @@ public class Version {
         this.date = date;
     }
 
+    public void setDifference(String difference) {
+        this.difference = difference;
+    }
+
     public String getId() {
         return id;
     }
@@ -27,5 +32,9 @@ public class Version {
 
     public String getDate() {
         return date;
+    }
+
+    public String getDifference() {
+        return difference;
     }
 }
