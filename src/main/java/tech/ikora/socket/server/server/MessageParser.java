@@ -1,6 +1,5 @@
 package tech.ikora.socket.server.server;
 
-import tech.ikora.socket.server.Globals;
 import tech.ikora.socket.server.model.Action;
 import tech.ikora.socket.server.model.Dom;
 import tech.ikora.socket.server.model.StackTrace;
@@ -35,6 +34,14 @@ public class MessageParser {
         version.setProject(readBlock(PROJECT_CODE, in));
         version.setDate(readBlock(TIME_CODE, in));
         version.setDifference(readBlock(DIFFERENCE_CODE, in));
+
+        try {
+            FileWriter myWriter = new FileWriter(String.format("C:\\Users\\renau\\Desktop\\locators\\diff-%s.txt", version.getId().substring(6)));
+            myWriter.write(version.getDifference());
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return version;
     }

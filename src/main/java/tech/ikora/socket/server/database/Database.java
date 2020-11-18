@@ -31,8 +31,7 @@ public class Database {
                     "create table if not exists version("
                     + "id text primary key,"
                     + "project text not null,"
-                    + "date text not null,"
-                    + "differnce text not null"
+                    + "date text not null"
                     + ");";
 
             statement.execute(createVersionTable);
@@ -76,12 +75,11 @@ public class Database {
 
     public static void store(Version version){
         try(Connection connection = DriverManager.getConnection(instance.url)){
-            final String insertVersionSQL = "insert or ignore into version(id, project, date, difference) values (?,?,?,?)";
+            final String insertVersionSQL = "insert or ignore into version(id, project, date) values (?,?,?)";
             final PreparedStatement insertVersion = connection.prepareStatement(insertVersionSQL);
             insertVersion.setString(1, version.getId());
             insertVersion.setString(2, version.getProject());
             insertVersion.setString(3, version.getDate());
-            insertVersion.setString(4, version.getDifference());
             insertVersion.execute();
 
         }catch (SQLException e) {
