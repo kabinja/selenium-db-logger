@@ -2,6 +2,7 @@ package tech.ikora.socket.server.difference;
 
 import tech.ikora.diff.parser.DiffParser;
 import tech.ikora.diff.parser.MalformedDiffException;
+import tech.ikora.diff.patch.Change;
 import tech.ikora.diff.patch.Patch;
 import tech.ikora.diff.patch.Patches;
 
@@ -38,8 +39,22 @@ public class StackTraceMapper {
         }
 
         final int index = old.lastIndexOf(":");
-        final int line = Integer.parseInt(old.substring(index));
+        final int line = Integer.parseInt(old.substring(index + 1));
 
-        return old;
+        final int add = countPositions(patch.get(), line, Change.Type.ADD);
+        final int remove = countPositions(patch.get(), line, Change.Type.REMOVE);
+
+        final int newLine = line - add + remove;
+
+        return old.substring(0, index) + ":" + newLine;
+    }
+
+    private static int countPositions(Patch patch, int line, Change.Type type){
+        return patch.getHunks().stream()
+                .flatMap(h -> h.getChanges().stream())
+                .filter(c -> c.getType() == type)
+                .map(Change::getPosition)
+                .filter(p -> p < line)
+                .reduce(0, Integer::sum);
     }
 }
