@@ -59,6 +59,11 @@
             <version>3.32.3.2</version>
         </dependency>
         <dependency>
+            <groupId>tech.ikora</groupId>
+            <artifactId>diff-utils</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.4.0</version>
