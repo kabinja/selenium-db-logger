@@ -7,6 +7,7 @@ public class Action {
     private String locator;
     private String url;
     private StackTrace stackTrace;
+    private StackTrace previousStackTrace;
     private Dom dom;
     private int windowWidth;
     private int windowHeight;
@@ -50,6 +51,14 @@ public class Action {
 
     public void setStackTrace(StackTrace stackTrace) {
         this.stackTrace = stackTrace;
+    }
+
+    public StackTrace getPreviousStackTrace() {
+        return previousStackTrace;
+    }
+
+    public void setPreviousStackTrace(StackTrace previousStackTrace) {
+        this.previousStackTrace = previousStackTrace;
     }
 
     public String getUrl() {

@@ -37,4 +37,14 @@ public class Version {
     public String getDifference() {
         return difference;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Version[id=%s; project=%s; date=%s; difference=%s",
+                id,
+                project,
+                date,
+                difference.isBlank() ? "no difference" : difference.substring(0, 8) + "..."
+        );
+    }
 }

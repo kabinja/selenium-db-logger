@@ -57,6 +57,7 @@ public class Database {
                     + "id integer primary key,"
                     + "commit_id text not null,"
                     + "stacktrace_id text not null,"
+                    + "previous_stacktrace_id text not null,"
                     + "locator text not null,"
                     + "strategy text not null,"
                     + "url text not null,"
@@ -89,33 +90,43 @@ public class Database {
 
     public static void store(Action action){
         try (Connection connection = DriverManager.getConnection(instance.url)) {
-            final String insertDomSQL = "insert or ignore into dom(id,content) values(?,?)";
-            final PreparedStatement insertDom = connection.prepareStatement(insertDomSQL);
-            insertDom.setInt(1, action.getDom().getId());
-            insertDom.setString(2, action.getDom().getContent());
-            insertDom.executeUpdate();
+            insertDom(connection, action.getDom().getId(), action.getDom().getContent());
+            insertStackTrace(connection, action.getStackTrace().getId(), action.getStackTrace().getContent());
+            insertStackTrace(connection, action.getPreviousStackTrace().getId(), action.getPreviousStackTrace().getContent());
 
-            final String insertStackTraceSQL = "insert or ignore into stack_trace(id,content) values(?,?)";
-            final PreparedStatement insertStackTrace = connection.prepareStatement(insertStackTraceSQL);
-            insertStackTrace.setInt(1, action.getStackTrace().getId());
-            insertStackTrace.setString(2, action.getStackTrace().getContent());
-            insertStackTrace.executeUpdate();
-
-            final String actionSQL = "insert into action(commit_id,stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?)";
+            final String actionSQL = "insert into action(commit_id,stacktrace_id,previous_stacktrace_id,locator,strategy,url,dom_id, window_width, window_height, failure) values(?,?,?,?,?,?,?,?,?,?)";
             final PreparedStatement insertAction = connection.prepareStatement(actionSQL);
             insertAction.setString(1, action.getCommitId());
             insertAction.setInt(2, action.getStackTrace().getId());
-            insertAction.setString(3, action.getLocator());
-            insertAction.setString(4, action.getStrategy());
-            insertAction.setString(5, action.getUrl());
-            insertAction.setInt(6, action.getDom().getId());
-            insertAction.setInt(7, action.getWindowWidth());
-            insertAction.setInt(8, action.getWindowHeight());
-            insertAction.setString(9, action.getFailure());
+            insertAction.setInt(3, action.getPreviousStackTrace().getId());
+            insertAction.setString(4, action.getLocator());
+            insertAction.setString(5, action.getStrategy());
+            insertAction.setString(6, action.getUrl());
+            insertAction.setInt(7, action.getDom().getId());
+            insertAction.setInt(8, action.getWindowWidth());
+            insertAction.setInt(9, action.getWindowHeight());
+            insertAction.setString(10, action.getFailure());
             insertAction.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void insertDom(Connection connection, int id, String content) throws SQLException {
+        final String insertDomSQL = "insert or ignore into dom(id,content) values(?,?)";
+        final PreparedStatement insertDom = connection.prepareStatement(insertDomSQL);
+        insertDom.setInt(1, id);
+        insertDom.setString(2, content);
+        insertDom.executeUpdate();
+
+    }
+
+    private static void insertStackTrace(Connection connection, int id, String content) throws SQLException {
+        final String insertStackTraceSQL = "insert or ignore into stack_trace(id,content) values(?,?)";
+        final PreparedStatement insertStackTrace = connection.prepareStatement(insertStackTraceSQL);
+        insertStackTrace.setInt(1, id);
+        insertStackTrace.setString(2, content);
+        insertStackTrace.executeUpdate();
     }
 }

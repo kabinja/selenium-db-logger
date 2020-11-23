@@ -1,5 +1,6 @@
 package tech.ikora.socket.server.server;
 
+import tech.ikora.socket.server.difference.StackTraceMapper;
 import tech.ikora.socket.server.model.Action;
 import tech.ikora.socket.server.model.Dom;
 import tech.ikora.socket.server.model.StackTrace;
@@ -35,14 +36,6 @@ public class MessageParser {
         version.setDate(readBlock(TIME_CODE, in));
         version.setDifference(readBlock(DIFFERENCE_CODE, in));
 
-        try {
-            FileWriter myWriter = new FileWriter(String.format("C:\\Users\\renau\\Desktop\\locators\\diff-%s.txt", version.getId().substring(6)));
-            myWriter.write(version.getDifference());
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return version;
     }
 
@@ -73,14 +66,23 @@ public class MessageParser {
     }
 
     public static String readBlock(final DataInputStream in) throws IOException {
+        if(in.available() == 0){
+            return "";
+        }
+
         int length = in.readInt();
+
+        if(length == 0){
+            return "";
+        }
+
         byte[] messageByte = new byte[length];
         boolean end = false;
 
         StringBuilder dataString = new StringBuilder(length);
         int totalBytesRead = 0;
 
-        while(!end) {
+        while(!end && in.available() > 0) {
             int currentBytesRead = in.read(messageByte);
 
             totalBytesRead = currentBytesRead + totalBytesRead;

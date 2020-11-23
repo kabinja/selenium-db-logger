@@ -32,29 +32,35 @@ public class StackTraceMapper {
     }
 
     private static String computeLine(String old, Patches patches){
-        final Optional<Patch> patch = patches.getByNewFile(old, false);
+        if(old.isBlank()){
+            return old;
+        }
+
+        final String[] split = old.split(":");
+
+        final String file = split[0].replace('.', '/') + ".java";
+        final int line = Integer.parseInt(split[2]);
+
+        final Optional<Patch> patch = patches.getByNewFile(file, false);
 
         if(patch.isEmpty()){
             return old;
         }
 
-        final int index = old.lastIndexOf(":");
-        final int line = Integer.parseInt(old.substring(index + 1));
+        final long add = countPositions(patch.get(), line, Change.Type.ADD);
+        final long remove = countPositions(patch.get(), line, Change.Type.REMOVE);
 
-        final int add = countPositions(patch.get(), line, Change.Type.ADD);
-        final int remove = countPositions(patch.get(), line, Change.Type.REMOVE);
+        final long newLine = line - add + remove;
 
-        final int newLine = line - add + remove;
-
-        return old.substring(0, index) + ":" + newLine;
+        return split[0] + ":" + split[1] + ":" + newLine;
     }
 
-    private static int countPositions(Patch patch, int line, Change.Type type){
+    private static long countPositions(Patch patch, int line, Change.Type type){
         return patch.getHunks().stream()
                 .flatMap(h -> h.getChanges().stream())
                 .filter(c -> c.getType() == type)
                 .map(Change::getPosition)
                 .filter(p -> p < line)
-                .reduce(0, Integer::sum);
+                .count();
     }
 }

@@ -2,7 +2,9 @@ package tech.ikora.socket.server.server;
 
 import tech.ikora.socket.server.Globals;
 import tech.ikora.socket.server.database.Database;
+import tech.ikora.socket.server.difference.StackTraceMapper;
 import tech.ikora.socket.server.model.Action;
+import tech.ikora.socket.server.model.StackTrace;
 import tech.ikora.socket.server.model.Version;
 
 import java.io.BufferedInputStream;
@@ -30,16 +32,17 @@ public class Listener {
     private static boolean processMessage(Socket socket){
         try(DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()))){
             while (in.available() > 0){
-                switch (in.readChar()){
+                final char code = in.readChar();
+                switch (code){
                     case READ_VERSION_CODE: System.out.println("Receive version frame"); setCommit(in); break;
                     case READ_FRAME_CODE:  System.out.println("Receive action frame"); setAction(in); break;
                     case STOP_CODE: System.out.println("Receive shutdown signal"); return false;
-                    default: throw new IllegalStateException("Unexpected code: " + in.readChar());
+                    default: throw new IllegalStateException("Unexpected code: " + code);
                 }
             }
         }
-        catch(IOException e) {
-            System.out.println(e.getMessage());
+        catch(Exception e) {
+            System.out.println(e.getClass().getCanonicalName() + ": " + e.getMessage());
         }
 
         return true;
@@ -55,6 +58,15 @@ public class Listener {
     private static void setAction(DataInputStream in) throws IOException {
         final Action action = MessageParser.readAction(in);
         action.setCommitId(Globals.getVersion().getId());
+
+        final String previousStackTrace = StackTraceMapper.map(
+                action.getStackTrace().getContent(),
+                Globals.getVersion().getDifference()
+        );
+
+        System.out.println(previousStackTrace);
+
+        action.setPreviousStackTrace(new StackTrace(previousStackTrace));
 
         Database.store(action);
     }
